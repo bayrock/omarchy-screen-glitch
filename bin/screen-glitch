@@ -1,0 +1,34 @@
+#!/bin/bash
+# Toggle the full-screen CRT/glitch shader (the php2shell clip look) in Hyprland.
+# Usage: screen-glitch [toggle|on|off|status]
+#
+# Writes a file into Omarchy's Hyprland toggle directory, so the state survives
+# reboots. The animated shader needs damage tracking off, which raises GPU use
+# while it's on.
+
+DIR="$(cd "$(dirname "$(readlink -f "$0")")/.." && pwd)"
+SHADER="$DIR/shaders/glitch.frag"
+FLAG="$HOME/.local/state/omarchy/toggles/hypr/screen-glitch.lua"
+
+on() {
+  mkdir -p "$(dirname "$FLAG")"
+  cat >"$FLAG" <<LUA
+-- Written by screen-glitch ($DIR): full-screen CRT/glitch shader. Remove to disable.
+hl.config({
+  decoration = { screen_shader = "$SHADER" },
+  debug = { damage_tracking = 0 },
+})
+LUA
+}
+
+off() { rm -f "$FLAG"; }
+
+case "${1:-toggle}" in
+  on) on ;;
+  off) off ;;
+  status) [[ -f $FLAG ]] && echo on || { echo off; exit 1; }; exit ;;
+  toggle) if [[ -f $FLAG ]]; then off; else on; fi ;;
+  *) echo "Usage: screen-glitch [toggle|on|off|status]" >&2; exit 2 ;;
+esac
+
+hyprctl reload >/dev/null

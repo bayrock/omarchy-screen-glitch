@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "bayrock.screen-glitch",
+  "name": "Screen Glitch",
+  "version": "1.0.0",
+  "author": "shojo.me",
+  "license": "MIT",
+  "description": "Toggle a full-screen CRT/glitch Hyprland shader: chromatic aberration, ghosting, scanlines, halftone, and occasional tearing bursts.",
+  "kinds": ["panel"],
+  "keepLoaded": true,
+  "entryPoints": {
+    "panel": "Panel.qml"
+  }
+}
