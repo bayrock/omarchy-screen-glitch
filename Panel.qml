@@ -37,11 +37,17 @@ Item {
     return root.opened ? "on" : "off"
   }
 
-  onManifestChanged: if (root.manifest) probe.running = true
+  // Probe once the script path is known. The command is set right here, not bound:
+  // a binding can still hold the old path when this handler runs, which starts
+  // "/bin/screen-glitch" and fails.
+  onScriptChanged: {
+    if (!root.manifest || !root.manifest.__sourceDir) return
+    probe.command = [root.script, "status"]
+    probe.running = true
+  }
 
   Process {
     id: probe
-    command: [root.script, "status"]
     stdout: StdioCollector {
       onStreamFinished: root.opened = text.trim() === "on"
     }
